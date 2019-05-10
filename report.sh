@@ -4,7 +4,7 @@ OS_NAME="$(uname | awk '{print tolower($0)}')"
 
 SHELL_DIR=$(dirname $0)
 
-USERNAME=${CIRCLE_PROJECT_USERNAME:-nalbam}
+USERNAME=${CIRCLE_PROJECT_USERNAME:-opsnow-tools}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-valve-reporter}
 
 prepare() {
