@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  report:
+    docker:
+      - image: opspresso/builder
+    working_directory: /tmp/works
+    steps:
+      - checkout
+      - run:
+          name: Check Charts
+          command: |
+            bash ./report.sh
+      - persist_to_workspace:
+          root: /tmp/works
+          paths:
+            - target/*
+
+workflows:
+  version: 2
+  apply:
+    jobs:
+      - report
+  nightly:
+    jobs:
+      - report
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
