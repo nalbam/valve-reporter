@@ -77,7 +77,7 @@ get_cost() {
         --time-period Start=${2},End=${3} \
         --metrics "UnblendedCost" \
         --filter ${4} \
-        | jq -r '"Start\t End\t Amount",
+        | jq -r '"Start End Amount",
                 (.ResultsByTime[] | "\(.TimePeriod.Start) \(.TimePeriod.End) \(.Total.UnblendedCost.Amount)")' \
         | column -t
 }
