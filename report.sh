@@ -54,19 +54,22 @@ _replace() {
 
 prepare() {
     rm -rf ${SHELL_DIR}/build
+    rm -rf ${SHELL_DIR}/target
+
     mkdir -p ${SHELL_DIR}/build
+    mkdir -p ${SHELL_DIR}/target
 
     if [ "${OS_NAME}" == "darwin" ]; then
         PREV_MONTH=$(date -v -1m +"%Y-%m-01")
         NEXT_MONTH=$(date -v +1m +"%Y-%m-01")
 
-        WEEK_BGN=$(date -v -6d +"%Y-%m-%d")
+        WEEK_BGN=$(date -v -10d +"%Y-%m-%d")
         WEEK_END=$(date +"%Y-%m-%d")
     else
         PREV_MONTH=$(date -d "-1 month" +%Y-%m-01)
         NEXT_MONTH=$(date -d "+1 month" +%Y-%m-01)
 
-        WEEK_BGN=$(date -d "-6 day" +%Y-%m-%d)
+        WEEK_BGN=$(date -d "-10 day" +%Y-%m-%d)
         WEEK_END=$(date +%Y-%m-%d)
     fi
 }
@@ -87,11 +90,11 @@ get_cost_with_filter() {
     ls ${SHELL_DIR}/config | grep json | sort > ${LIST}
 
     while read VAL; do
-        _result "Start=${PREV_MONTH},End=${NEXT_MONTH} UnblendedCost : ${VAL}" >> cost.txt
-        get_cost "MONTHLY" ${PREV_MONTH} ${NEXT_MONTH} file://${SHELL_DIR}/config/${VAL} >> cost.txt
+        _result "Start=${PREV_MONTH},End=${NEXT_MONTH} UnblendedCost : ${VAL}" >> ${SHELL_DIR}/target/cost.txt
+        get_cost "MONTHLY" ${PREV_MONTH} ${NEXT_MONTH} file://${SHELL_DIR}/config/${VAL} >> ${SHELL_DIR}/target/cost.txt
 
-        _result "Start=${WEEK_BGN},End=${WEEK_END} UnblendedCost : ${VAL}" >> cost.txt
-        get_cost "DAILY" ${WEEK_BGN} ${WEEK_END} file://${SHELL_DIR}/config/${VAL} >> cost.txt
+        _result "Start=${WEEK_BGN},End=${WEEK_END} UnblendedCost : ${VAL}" >> ${SHELL_DIR}/target/cost.txt
+        get_cost "DAILY" ${WEEK_BGN} ${WEEK_END} file://${SHELL_DIR}/config/${VAL} >> ${SHELL_DIR}/target/cost.txt
 
     done < ${LIST}
 }
@@ -109,11 +112,11 @@ get_cost_with_tag() {
 
             echo "{\"Tags\":{\"Key\":\"${TAG}\",\"Values\":[\"${VAL}\"]}}" > ${SHELL_DIR}/build/filter.json
 
-            _result "Start=${PREV_MONTH},End=${NEXT_MONTH} UnblendedCost : ${TAG}=${VAL}" >> cost.txt
-            get_cost "MONTHLY" ${PREV_MONTH} ${NEXT_MONTH} file://${SHELL_DIR}/build/filter.json >> cost.txt
+            _result "Start=${PREV_MONTH},End=${NEXT_MONTH} UnblendedCost : ${TAG}=${VAL}" >> ${SHELL_DIR}/target/cost.txt
+            get_cost "MONTHLY" ${PREV_MONTH} ${NEXT_MONTH} file://${SHELL_DIR}/build/filter.json >> ${SHELL_DIR}/target/cost.txt
 
-            _result "Start=${WEEK_BGN},End=${WEEK_END} UnblendedCost : ${TAG}=${VAL}" >> cost.txt
-            get_cost "DAILY" ${WEEK_BGN} ${WEEK_END} file://${SHELL_DIR}/build/filter.json >> cost.txt
+            _result "Start=${WEEK_BGN},End=${WEEK_END} UnblendedCost : ${TAG}=${VAL}" >> ${SHELL_DIR}/target/cost.txt
+            get_cost "DAILY" ${WEEK_BGN} ${WEEK_END} file://${SHELL_DIR}/build/filter.json >> ${SHELL_DIR}/target/cost.txt
 
         done < ${LIST}
 
@@ -121,8 +124,6 @@ get_cost_with_tag() {
 }
 
 prepare
-
-rm -f cost.txt log.csv
 
 get_cost_with_filter
 
